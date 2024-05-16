@@ -1,16 +1,26 @@
 import puppeteer from "puppeteer";
 import { sendBlogPost } from "./sendBlogPost.js";
 
-const notAScraper = async (url, searchWholeBlog, pageNumber) => {
+const searchWholeBlog = process.argv[2]
+let pageNumber = process.argv[3]
+
+const notAScraper = async (url) => {
     console.log("searchWholeBlog = " + searchWholeBlog)
     console.log("pageNumber = " + pageNumber)
-    if(searchWholeBlog) {
+
+    if(searchWholeBlog == true) {
+        if(pageNumber >= 2) {
+            url = url.concat("page/" + pageNumber);
+            pageNumber--
+        } 
+    } else {
         if(pageNumber >= 2) {
             url = url.concat("page/" + pageNumber);
         } 
+        pageNumber = 0;
     }
 
-    console.log("Searching " + url)
+    console.log("Searching page: " + url)
 
     try {
         const browser = await puppeteer.launch();
@@ -43,12 +53,12 @@ const notAScraper = async (url, searchWholeBlog, pageNumber) => {
                     return p.innerHTML;
                 });
 
+                console.log({title: title, url: url, theDate: theDate})
                 return {postImage, title, url, theDate, content };
             });
         });
         
         sendBlogPost(allBlogPosts)
-        console.log(allBlogPosts);
 
         await browser.close();
     } catch (error) {

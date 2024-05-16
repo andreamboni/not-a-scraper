@@ -1,31 +1,24 @@
 function sendBlogPost(allBlogPosts) {
 
-    console.log("SendBlogPost")
-
     allBlogPosts.forEach((blogPost) => {
-        fetch('http://localhost:8085/not-a-grrm-archive/v1/saveBlogPost/', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(blogPost),
-        })
+        const URL = 'http://localhost:8085/not-a-grrm-archive/v1/saveBlogPost/'
+        const options = {method: 'POST', headers: {'Content-Type': 'application/json',}, body: JSON.stringify(blogPost),}
+    
+        fetch(URL, options)
         .then(response => {
             if (!response.ok) {
-                throw new Error('Erro ao enviar os dados. Status: ' + response.status);
+                    return response.json();
             }
             const contentType = response.headers.get('content-type');
             if (contentType && contentType.includes('application/json')) {
                 return response.json();
             } 
         })
-        .then(blogPost => {
-            if(blogPost) {
-                console.log('Dados enviados com sucesso:', blogPost);
-            } 
+        .then(response => {
+            console.log(response)
         })
         .catch((error) => {
-            console.error('Erro:', error);
+            console.error(error)
         });
     })
 
